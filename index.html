@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>3DアクションRPG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- タイトル画面 -->
+<div id="titleScreen">
+  <div class="title-bg"></div>
+  <div class="title-content">
+    <div class="title-logo">
+      <span class="title-main">⚔️ DUNGEON</span>
+      <span class="title-sub">QUEST</span>
+    </div>
+    <div class="title-deco">― 深淵のダンジョン ―</div>
+    <button id="startBtn" class="start-btn"><span>⚔️ はじめから</span></button>
+    <button id="continueBtn" class="continue-btn" style="display:none">
+      <span>📂 続きから</span>
+      <div id="saveInfo" class="save-info"></div>
+    </button>
+    <div class="title-hint">
+      タップ：移動・攻撃　右フリック：魔法 🔥<br>
+      左フリック：回転斬り ⚡　🏪タップ：ショップ
+    </div>
+  </div>
+</div>
+
+<!-- ゲームオーバー画面 -->
+<div id="gameoverScreen" style="display:none">
+  <div class="gameover-bg"></div>
+  <div class="gameover-content">
+    <div class="gameover-title">💀 GAME OVER</div>
+    <div id="gameoverStats" class="gameover-stats"></div>
+    <button id="retryBtn" class="retry-btn"><span>もう一度挑戦</span></button>
+  </div>
+</div>
+
+<!-- クリア画面 -->
+<div id="clearScreen" style="display:none">
+  <div class="clear-bg"></div>
+  <div class="clear-content">
+    <div class="clear-title">🏆 CLEAR!</div>
+    <div id="clearStats" class="clear-stats"></div>
+    <button id="clearRetryBtn" class="retry-btn"><span>もう一度挑戦</span></button>
+  </div>
+</div>
+
+<!-- ショップ画面 -->
+<div id="shopScreen" style="display:none">
+  <div class="shop-overlay"></div>
+  <div class="shop-content">
+    <div class="shop-header">🏪 アイテム屋</div>
+    <div class="shop-gold">💰 <span id="shopGoldText">0</span> G</div>
+    <div class="shop-tabs">
+      <button class="shop-tab active" data-tab="weapon">武器</button>
+      <button class="shop-tab" data-tab="armor">防具</button>
+      <button class="shop-tab" data-tab="item">回復薬</button>
+    </div>
+    <div id="shopItems" class="shop-items"></div>
+    <div class="shop-save-row">
+      <button id="shopSaveBtn" class="shop-save-btn">💾 セーブ</button>
+      <button id="shopLoadBtn" class="shop-load-btn">📂 ロード</button>
+    </div>
+    <button id="shopCloseBtn" class="shop-close-btn">閉じる</button>
+  </div>
+</div>
+
+<!-- ゲーム画面 -->
+<div id="gameUI" style="display:none">
+
+  <!-- 左上ステータス -->
+  <div id="ui">
+    <div class="stat-row">
+      <span class="stat-label">HP</span>
+      <div class="bar-outer"><div id="hpBar" class="bar-fill hp-bar"></div></div>
+      <span id="hpText" class="stat-num">150</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">MP</span>
+      <div class="bar-outer"><div id="mpBar" class="bar-fill mp-bar"></div></div>
+      <span id="mpText" class="stat-num">75</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">EXP</span>
+      <div class="bar-outer"><div id="expBar" class="bar-fill exp-bar"></div></div>
+    </div>
+    <div class="info-row">
+      <span>Lv.<span id="levelText">1</span></span>
+      <span>👾×<span id="enemyText">0</span></span>
+    </div>
+    <div class="equip-row">
+      <span class="equip-icon">⚔️</span><span id="weaponText">なし</span>
+    </div>
+    <div class="equip-row">
+      <span class="equip-icon">🛡️</span><span id="armorText">なし</span>
+    </div>
+    <div class="gold-row">💰 <span id="goldText">0</span> G</div>
+    <!-- ステータス詳細行 -->
+    <div class="stat-detail" id="statDetail"></div>
+    <button id="statusBtn" class="status-open-btn">📊 ステータス</button>
+    <span id="atkText" style="display:none"></span>
+    <span id="defText" style="display:none"></span>
+    <span id="floorText" style="display:none"></span>
+  </div>
+
+  <!-- ミニマップ -->
+  <canvas id="minimap"></canvas>
+
+  <!-- メッセージ -->
+  <div id="message"></div>
+
+  <!-- レベルアップ演出 -->
+  <div id="levelupMsg" style="display:none">LEVEL UP! ⬆️</div>
+
+  <!-- 回復ボタン（右下） -->
+  <div id="itemButtons">
+    <button id="hpPotBtn" class="item-btn hp-btn">
+      <span class="item-btn-icon">💊</span>
+      <span class="item-btn-label">HP回復</span>
+      <span class="item-btn-count">×<span id="hpPotCount">3</span></span>
+    </button>
+    <button id="mpPotBtn" class="item-btn mp-btn">
+      <span class="item-btn-icon">💧</span>
+      <span class="item-btn-label">MP回復</span>
+      <span class="item-btn-count">×<span id="mpPotCount">3</span></span>
+    </button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
