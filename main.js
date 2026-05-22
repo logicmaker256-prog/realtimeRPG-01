@@ -502,52 +502,58 @@ function makeEnemyMesh(data, isBoss){
         const sc  = isBoss ? 2.2 : 1.0;
         const col = isBoss ? 0x006600 : 0x33aa33;
         const belly = 0xddee99;
-        // 胴体セグメント
-        const segs=[
-            {r:0.32,y:0.32,z:0},
-            {r:0.30,y:0.52,z:0.22},
-            {r:0.27,y:0.68,z:0.42},
-            {r:0.24,y:0.78,z:0.60},
-            {r:0.20,y:0.82,z:0.75},
+
+        // 尻尾(Z-手前)→胴体(地面這い)→首(鎌首)→頭(Z+奥・上)
+        const bodySegs = [
+            // 尻尾（先細り・手前）
+            {r:0.03, y:0.03, z:-1.35, bv:false},
+            {r:0.06, y:0.05, z:-1.18, bv:false},
+            {r:0.10, y:0.09, z:-1.00, bv:false},
+            {r:0.14, y:0.13, z:-0.80, bv:false},
+            // 胴体（地面を這う）
+            {r:0.22, y:0.17, z:-0.58, bv:true},
+            {r:0.27, y:0.20, z:-0.32, bv:true},
+            {r:0.29, y:0.20, z:-0.05, bv:true},
+            {r:0.28, y:0.20, z: 0.20, bv:true},
+            // 首（鎌首・じわじわ持ち上がる）
+            {r:0.26, y:0.32, z: 0.40, bv:true},
+            {r:0.24, y:0.55, z: 0.52, bv:true},
+            {r:0.22, y:0.82, z: 0.56, bv:true},
+            {r:0.20, y:1.10, z: 0.52, bv:true},
         ];
-        segs.forEach(s=>{
+
+        bodySegs.forEach(s=>{
             const b=mesh(new THREE.SphereGeometry(s.r*sc,10,8),mat(col));
-            b.position.set(0,s.y*sc,s.z*sc-0.4*sc); g.add(b);
+            b.position.set(0, s.y*sc, s.z*sc); g.add(b);
+            if(s.bv){
+                const bv=mesh(new THREE.SphereGeometry(s.r*sc*0.6,8,6),mat(belly));
+                bv.position.set(0, s.y*sc-0.04*sc, s.z*sc+0.16*sc); g.add(bv);
+            }
         });
-        // お腹（腹側を明るく）
-        segs.forEach(s=>{
-            const bv=mesh(new THREE.SphereGeometry(s.r*sc*0.7,8,6),mat(belly));
-            bv.position.set(0,s.y*sc-0.05*sc,s.z*sc-0.4*sc+0.28*sc); g.add(bv);
+
+        // 頭（鎌首の先・Z+奥の上方）
+        const head=mesh(new THREE.SphereGeometry(0.36*sc,12,10),mat(col));
+        head.scale.set(0.9, 0.72, 1.2);
+        head.position.set(0, 1.36*sc, 0.60*sc); g.add(head);
+
+        // 目
+        [-0.19*sc, 0.19*sc].forEach(ox=>{
+            const ew=mesh(new THREE.SphereGeometry(0.09*sc,8,8),mat(0xffff00,0xaaaa00,0.3));
+            ew.position.set(ox, 1.46*sc, 0.85*sc); g.add(ew);
+            const ep=mesh(new THREE.SphereGeometry(0.045*sc,6,6),mat(0x111111));
+            ep.position.set(ox, 1.46*sc, 0.93*sc); g.add(ep);
         });
-        // 尻尾（先細り・後ろへ伸びる）
-        const tailSegs=[
-            {r:0.17, y:0.72, z:-0.25},
-            {r:0.13, y:0.60, z:-0.50},
-            {r:0.09, y:0.46, z:-0.72},
-            {r:0.06, y:0.32, z:-0.90},
-            {r:0.03, y:0.20, z:-1.04},
-        ];
-        tailSegs.forEach(s=>{
-            const t=mesh(new THREE.SphereGeometry(s.r*sc,8,6),mat(col));
-            t.position.set(0,s.y*sc,s.z*sc); g.add(t);
+
+        // 舌（二又・Z+前方へ）
+        [-0.06*sc, 0.06*sc].forEach(ox=>{
+            const t=mesh(new THREE.CylinderGeometry(0.022*sc,0.008*sc,0.18*sc,4),mat(0xff2222));
+            t.rotation.x = -Math.PI/2.2;
+            t.position.set(ox, 1.28*sc, 0.96*sc); g.add(t);
         });
-        // 頭
-        const head=mesh(new THREE.SphereGeometry(0.38*sc,12,10),mat(col));
-        head.scale.set(1,0.8,1.2); head.position.set(0,0.85*sc,0.38*sc); g.add(head);
-        // 目（可愛め・丸め）
-        [-0.22*sc,0.22*sc].forEach(ox=>{
-            const ew=mesh(new THREE.SphereGeometry(0.1*sc,8,8),mat(0xffff00,0xaaaa00,0.3));
-            ew.position.set(ox,0.92*sc,0.7*sc); g.add(ew);
-            const ep=mesh(new THREE.SphereGeometry(0.05*sc,6,6),mat(0x111111));
-            ep.position.set(ox,0.92*sc,0.78*sc); g.add(ep);
-        });
-        // 舌（二又）
-        [-0.07*sc,0.07*sc].forEach(ox=>{
-            const t=mesh(new THREE.CylinderGeometry(0.025*sc,0.01*sc,0.2*sc,4),mat(0xff2222));
-            t.rotation.x=Math.PI/2.5; t.position.set(ox,0.8*sc,0.88*sc); g.add(t);
-        });
+
         if(isBoss){
-            const bl=new THREE.PointLight(0x00ff44,2.5,16); bl.position.y=3; g.add(bl);
+            const bl=new THREE.PointLight(0x00ff44,2.5,16);
+            bl.position.set(0,2,0); g.add(bl);
         }
     }
 
@@ -1416,8 +1422,25 @@ function updateEnemies(){
             // X・Z軸個別チェックで壁すべり
             const canX = canMove(nx, enemy.position.z, eRadius) && !isShopRoom(nx, enemy.position.z);
             const canZ = canMove(enemy.position.x, nz, eRadius) && !isShopRoom(enemy.position.x, nz);
-            if(canX) enemy.position.x = nx;
-            if(canZ) enemy.position.z = nz;
+
+            // 他の敵との重なりチェック
+            const minSep = enemy.userData.isBoss ? 3.5 : 1.6;
+            let blockedByEnemy = false;
+            for(let other of enemies){
+                if(other === enemy) continue;
+                const ex = canX ? nx : enemy.position.x;
+                const ez = canZ ? nz : enemy.position.z;
+                const sep = enemy.userData.isBoss || other.userData.isBoss ? 3.5 : minSep;
+                if(Math.hypot(ex - other.position.x, ez - other.position.z) < sep){
+                    blockedByEnemy = true;
+                    break;
+                }
+            }
+
+            if(!blockedByEnemy){
+                if(canX) enemy.position.x = nx;
+                if(canZ) enemy.position.z = nz;
+            }
         } else if(dist<=stopDist&&enemy.userData.cooldown<=0){
             const dmg=calcDamage(enemy.userData.atk,getDEF());
             playerHP-=dmg;
